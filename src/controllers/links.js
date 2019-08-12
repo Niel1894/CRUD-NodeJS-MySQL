@@ -35,6 +35,7 @@ exports.deleteLinks = async (req, res) => {
   try {
     const {id} = req.params;
     await pool.query('DELETE FROM link WHERE id = ?', [id])
+    req.flash('success','Link Removed Successfully')
      res.redirect('/links')    
   } catch (error) {
     
@@ -59,6 +60,7 @@ exports.deleteLinks = async (req, res) => {
         description
      }
      await pool.query('UPDATE link SET ? WHERE id = ?', [newLink, id])
+     req.flash('success','Link Updated Successfully')
      res.redirect('/links')
    } catch (error) {
      
