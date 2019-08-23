@@ -1,18 +1,20 @@
-const express = require('express')
-const morgan = require('morgan')
-const hbs = require('express-handlebars')
-const path = require('path')
-const flash = require('connect-flash')
-const session = require('express-session')
-const mysqlstore = require('express-mysql-session')(session)
-const {database} = require('./keys')
+const express = require('express');
+const morgan = require('morgan');
+const hbs = require('express-handlebars');
+const path = require('path');
+const flash = require('connect-flash');
+const session = require('express-session');
+const mysqlstore = require('express-mysql-session')(session);
+const bodyParser = require('body-parser');
+const {database} = require('./keys');
+const passport = require('passport');
 //initializations
 const app = express();
+require('./lib/passport');
 
 
 //Settings
 app.set('port', process.env.PORT || 3000);
-app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'))
 app.engine('.hbs', hbs({
     defaultLayout: 'main',
@@ -21,11 +23,12 @@ app.engine('.hbs', hbs({
     extname: '.hbs',
     helpers: require('./lib/handlebars')
 }));
+app.set('view engine', 'hbs');
 
 //Middlewares
 app.use(morgan('dev'));
-app.use(express.urlencoded({extended:false}));
-app.use(express.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 app.use(session({
     secret: 'mysqlnodesession',
     resave: false,
@@ -33,10 +36,13 @@ app.use(session({
     store: new mysqlstore(database)
 }));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
 
 //Global Variables
 app.use((req, res, next) => {
     app.locals.success = req.flash('success');
+    app.locals.message = req.flash('message');
     next();
 })
 
@@ -45,9 +51,9 @@ const index = require('./routes/index');
 const links = require('./routes/links');
 const authentication = require('./routes/authentication');
 //Routes
-app.use('/', index);
+app.use(index);
 app.use('/links', links);
-app.use('/authentication', authentication);
+app.use(authentication);
 
 //Static Files
 app.use(express.static(path.join(__dirname, 'public')));
