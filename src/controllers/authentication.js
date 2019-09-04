@@ -10,16 +10,20 @@ exports.postSignup = passport.authenticate('local.signup', {
         failureFlash: true
     });
 exports.getProfile = async(req, res) => {
-    res.send('This is your Profile')
+    res.render('partials/profile')
 }
 
 exports.getLogin = async(req, res) => {
     res.render('auth/login')   
 }
-exports.postLogin =(req, res, next) => {
-     passport.authenticate('local.login',{
+
+exports.postLogin = passport.authenticate('local.login',{
         successRedirect: '/profile',
         failureRedirect: '/login',
         failureFlash: true
-    })(req, res, next)
+    });
+
+exports.getLogout = async(req, res) => {
+        req.logOut();
+        res.redirect('/login')
 }
