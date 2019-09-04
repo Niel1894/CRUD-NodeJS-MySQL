@@ -10,7 +10,7 @@ exports.postSignup = passport.authenticate('local.signup', {
         failureFlash: true
     });
 exports.getProfile = async(req, res) => {
-    res.render('partials/profile')
+    res.render('profile')
 }
 
 exports.getLogin = async(req, res) => {

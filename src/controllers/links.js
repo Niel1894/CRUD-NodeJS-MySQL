@@ -10,7 +10,8 @@ exports.postaddLinks = async(req, res) => {
     const newLink = {
       title,
       url,
-      description
+      description,
+      id_user: req.user.id
   };
     await pool.query('INSERT INTO link SET ?', [newLink]);  
     req.flash('success','Link Saved Successfully')
@@ -23,9 +24,8 @@ exports.postaddLinks = async(req, res) => {
 }
 exports.getLinks = async (req, res) => {
   try {
-    const links = await pool.query('SELECT * FROM link')
+    const links = await pool.query('SELECT * FROM link WHERE id_user = ?', [req.user.id])
     res.render('links/list', {links})
-    //res.status(200).json({msg: 'Lista de links'})
   } catch (error) {
     
   }
